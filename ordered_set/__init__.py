@@ -49,7 +49,7 @@ def _is_atomic(obj: object) -> bool:
     OrderedSet of strings. It shouldn't give the indexes of each individual
     character.
     """
-    return isinstance(obj, (str, tuple))
+    pass
 
 
 class OrderedSet(MutableSet[T], Sequence[T]):
@@ -139,7 +139,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> this is other
             False
         """
-        return self.__class__(self)
+        pass
 
     # Define the gritty details of how an OrderedSet is serialized as a pickle.
     # We leave off type annotations, because the only code that should interact
@@ -191,10 +191,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> print(oset)
             OrderedSet([3])
         """
-        if key not in self.map:
-            self.map[key] = len(self.items)
-            self.items.append(key)
-        return self.map[key]
+        pass
 
     append = add
 
@@ -210,13 +207,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> print(oset)
             OrderedSet([1, 2, 3, 5, 4])
         """
-        item_index = 0
-        try:
-            for item in sequence:
-                item_index = self.add(item)
-        except TypeError:
-            raise ValueError(f"Argument needs to be an iterable, got {type(sequence)}")
-        return item_index
+        pass
 
     @overload
     def index(self, key: Sequence[T]) -> List[int]:
@@ -240,9 +231,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset.index(2)
             1
         """
-        if isinstance(key, Iterable) and not _is_atomic(key):
-            return [self.index(subkey) for subkey in key]
-        return self.map[key]
+        pass
 
     # Provide some compatibility with pd.Index
     get_loc = index
@@ -260,13 +249,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset.pop()
             3
         """
-        if not self.items:
-            raise KeyError("Set is empty")
-
-        elem = self.items[index]
-        del self.items[index]
-        del self.map[elem]
-        return elem
+        pass
 
     def discard(self, key: T) -> None:
         """
@@ -284,20 +267,13 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> print(oset)
             OrderedSet([1, 3])
         """
-        if key in self:
-            i = self.map[key]
-            del self.items[i]
-            del self.map[key]
-            for k, v in self.map.items():
-                if v >= i:
-                    self.map[k] = v - 1
+        pass
 
     def clear(self) -> None:
         """
         Remove all items from this OrderedSet.
         """
-        del self.items[:]
-        self.map.clear()
+        pass
 
     def __iter__(self) -> Iterator[T]:
         """
@@ -362,12 +338,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset | {10}
             OrderedSet([3, 1, 4, 5, 2, 0, 10])
         """
-        cls: type = OrderedSet
-        if isinstance(self, OrderedSet):
-            cls = self.__class__
-        containers = map(list, it.chain([self], sets))
-        items = it.chain.from_iterable(containers)
-        return cls(items)
+        pass
 
     def __and__(self, other: SetLike[T]) -> "OrderedSet[T]":
         # the parent implementation of this is backwards
@@ -387,14 +358,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset.intersection()
             OrderedSet([1, 2, 3])
         """
-        cls: type = OrderedSet
-        items: OrderedSetInitializer[T] = self
-        if isinstance(self, OrderedSet):
-            cls = self.__class__
-        if sets:
-            common = set.intersection(*map(set, sets))
-            items = (item for item in self if item in common)
-        return cls(items)
+        pass
 
     def difference(self, *sets: SetLike[T]) -> "OrderedSet[T]":
         """
@@ -410,12 +374,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> OrderedSet([1, 2, 3]).difference()
             OrderedSet([1, 2, 3])
         """
-        cls = self.__class__
-        items: OrderedSetInitializer[T] = self
-        if sets:
-            other = set.union(*map(set, sets))
-            items = (item for item in self if item not in other)
-        return cls(items)
+        pass
 
     def issubset(self, other: SetLike[T]) -> bool:
         """
@@ -429,9 +388,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> OrderedSet([1, 2, 3]).issubset({1, 4, 3, 5})
             False
         """
-        if len(self) > len(other):  # Fast check for obvious cases
-            return False
-        return all(item in other for item in self)
+        pass
 
     def issuperset(self, other: SetLike[T]) -> bool:
         """
@@ -445,9 +402,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> OrderedSet([1, 4, 3, 5]).issuperset({1, 2, 3})
             False
         """
-        if len(self) < len(other):  # Fast check for obvious cases
-            return False
-        return all(item in self for item in other)
+        pass
 
     def symmetric_difference(self, other: SetLike[T]) -> "OrderedSet[T]":
         """
@@ -464,20 +419,14 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> this.symmetric_difference(other)
             OrderedSet([4, 5, 9, 2])
         """
-        cls: type = OrderedSet
-        if isinstance(self, OrderedSet):
-            cls = self.__class__
-        diff1 = cls(self).difference(other)
-        diff2 = cls(other).difference(self)
-        return diff1.union(diff2)
+        pass
 
     def _update_items(self, items: list) -> None:
         """
         Replace the 'items' list of this OrderedSet with a new one, updating
         self.map accordingly.
         """
-        self.items = items
-        self.map = {item: idx for (idx, item) in enumerate(items)}
+        pass
 
     def difference_update(self, *sets: SetLike[T]) -> None:
         """
@@ -494,11 +443,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> print(this)
             OrderedSet([3, 5])
         """
-        items_to_remove = set()  # type: Set[T]
-        for other in sets:
-            items_as_set = set(other)  # type: Set[T]
-            items_to_remove |= items_as_set
-        self._update_items([item for item in self.items if item not in items_to_remove])
+        pass
 
     def intersection_update(self, other: SetLike[T]) -> None:
         """
@@ -512,8 +457,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> print(this)
             OrderedSet([1, 3, 7])
         """
-        other = set(other)
-        self._update_items([item for item in self.items if item in other])
+        pass
 
     def symmetric_difference_update(self, other: SetLike[T]) -> None:
         """
@@ -527,8 +471,4 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> print(this)
             OrderedSet([4, 5, 9, 2])
         """
-        items_to_add = [item for item in other if item not in self]
-        items_to_remove = set(other)
-        self._update_items(
-            [item for item in self.items if item not in items_to_remove] + items_to_add
-        )
+        pass
